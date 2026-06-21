@@ -21,13 +21,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
 
   # Kafka Comsumer Configuration
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: fusion-engine-group
-      auto-offset-reset: earliest # If restart, read unread messages
+      auto-offset-reset: earliest # If restarted, read unread messages
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
