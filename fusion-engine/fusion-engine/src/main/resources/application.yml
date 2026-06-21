@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: fusion-engine
+
+  # Database configuration
+  dataSource:
+    url: jdbc:postgresql://localhost:5432/sentinel_fusion
+    username: sentinel_admin
+    password: sentinel_password
+    driver-class-name: org.postgresql.Driver
+
+  # Flyway configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  # JPA & Hibernate Spatial
+  jpa:
+    hibernate:
+      ddl-auto: validate # Never update. Let flyway do it
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
+
+  # Kafka Comsumer Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: fusion-engine-group
+      auto-offset-reset: earliest # If restart, read unread messages
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
