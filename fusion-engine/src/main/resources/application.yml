@@ -9,18 +9,18 @@ spring:
     password: sentinel_password
     driver-class-name: org.postgresql.Driver
 
+  # JPA & Hibernate Spatial
+  jpa:
+    hibernate:
+      ddl-auto: none # Never update. Let flyway do it
+    properties:
+      hibernate:
+        format_sql: true
+
   # Flyway configuration
   flyway:
     enabled: true
     baseline-on-migrate: true
-
-  # JPA & Hibernate Spatial
-  jpa:
-    hibernate:
-      ddl-auto: validate # Never update. Let flyway do it
-    properties:
-      hibernate:
-        format_sql: true
 
   # Kafka Comsumer Configuration
   kafka:
