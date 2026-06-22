@@ -13,7 +13,7 @@ app.post('/api/sensors/ping', async (req: Request<{}, {}, SensorPing>, res: Resp
         if (!sensorData.sensorId || !sensorData.lat || !sensorData.lon) {
             return res.status(400).json({error: 'Missing required sensor fields'});
         }
-
+        sensorData.timestamp = Date.now();
         // Drop it into Kafka
         await publishSensorPing(sensorData);
         res.status(202).json({status: 'Accepted'});
