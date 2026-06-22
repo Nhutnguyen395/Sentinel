@@ -20,10 +20,16 @@ export const connectKafkaProducer = async () => {
 };
 
 export const publishSensorPing = async (payload: SensorPing) => {
-    await producer.send({
-       topic: 'raw-sensor-ping',
-       messages: [
-           {value: JSON.stringify(payload)}
-       ],
-    });
+    try{
+        const result = await producer.send({
+            topic: 'raw-sensor-pings',
+            messages: [
+                {value: JSON.stringify(payload)}
+            ],
+        });
+        // @ts-ignore
+        console.log(`Successfully sent to Kafka partitions: `, result[0].partition);
+    } catch (error){
+        console.error(`Node.js failed to send to Kafka: `, error);
+    }
 }
