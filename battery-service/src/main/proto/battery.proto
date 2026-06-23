@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+// Tell compiler where to put the generated Java Code
+option java_package = "com.sentinel.battery.grpc";
+option java_multiple_files = true;
+
+// Service Definition (Methods we can call)
+service BatteryManagement {
+  // The interceptor calls this method to get a firing solution
+  rpc GetOptimalLauncher (TargetCoordinates) returns (FiringSolution);
+}
+
+// Request Payload
+// = 1, = 2 are not value, they are memory tags
+message TargetCoordinates {
+  double target_lat = 1;
+  double target_lon = 2;
+}
+
+// Response Payload
+message FiringSolution {
+  string launcher_id = 1;
+  double time_to_intercept_seconds = 2;
+  bool is_in_range = 3;
+}
