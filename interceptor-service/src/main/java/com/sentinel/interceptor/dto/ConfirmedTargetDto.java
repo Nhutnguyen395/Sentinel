@@ -1,4 +1,4 @@
-package com.sentinel.fusion.dto;
+package com.sentinel.interceptor.dto;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,5 +8,5 @@ public record ConfirmedTargetDto(
         double estimatedLat,
         double estimatedLon,
         long confirmationTime,
-        List<String> sensorIds // List of sensors that corroborated
+        List<String> sensorIds
 ) {}
