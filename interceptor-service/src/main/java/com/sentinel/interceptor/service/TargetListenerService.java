@@ -2,6 +2,9 @@ package com.sentinel.interceptor.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sentinel.interceptor.dto.ConfirmedTargetDto;
+import com.sentinel.battery.grpc.BatteryManagementGrpc;
+import com.sentinel.battery.grpc.FiringSolution;
+import com.sentinel.battery.grpc.TargetCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,8 +15,12 @@ public class TargetListenerService {
     private static final Logger log = LoggerFactory.getLogger(TargetListenerService.class);
     private final ObjectMapper objectMapper;
 
-    public TargetListenerService(){
+    // Declare stub
+    private final BatteryManagementGrpc.BatteryManagementBlockingStub batteryStub;
+
+    public TargetListenerService(BatteryManagementGrpc.BatteryManagementBlockingStub batteryStub) {
         this.objectMapper = new ObjectMapper();
+        this.batteryStub = batteryStub;
     }
 
     // Listen to the topic Fusion engine just published to
@@ -23,14 +30,27 @@ public class TargetListenerService {
             // Convert raw JSON string back to java record
             ConfirmedTargetDto target = objectMapper.readValue(message, ConfirmedTargetDto.class);
 
-            log.warn("TARGET ACQUIRED BY C2 SYSTEM!");
-            log.warn("ID: {}", target.targetId());
-            log.warn("Coordinates: {}, {}", target.estimatedLat(), target.estimatedLon());
-            log.warn("Corroborated by: {}", target.sensorIds());
+            log.warn("TARGET ACQUIRED BY C2 SYSTEM! ID: {}", target.targetId());
+            log.info("Requesting firing solution for coordinates: {}, {}",
+                    target.estimatedLat(), target.estimatedLon());
 
-            // Todo: make a gPRC call to the Battery Service to get a firing solution
+            // Build the gRPC Request using the Protobuf Builder
+            TargetCoordinates request = TargetCoordinates.newBuilder()
+                    .setTargetLat(target.estimatedLat())
+                    .setTargetLon(target.estimatedLon())
+                    .build();
+
+            // Make the synchronous gRPC call to the Battery Service
+            FiringSolution response = batteryStub.getOptimalLauncher(request);
+
+            // Handle the response
+            if (response.getIsInRange()){
+                log.error("LAUNCH COMMAND ISSUED!");
+                log.error("Assigned Battery: {}", response.getLauncherId());
+                log.error("Estimated Time to Impact: {} seconds", response.getTimeToInterceptSeconds());
+            }
         } catch (Exception e) {
-            log.error("Failed to parse incoming target data", e);
+            log.error("Failed to process target or contact battery service", e);
         }
     }
 }
