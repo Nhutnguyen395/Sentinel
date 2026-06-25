@@ -1,6 +1,6 @@
 import express, {type Request, type Response } from 'express';
-import { connectKafkaProducer, publishSensorPing }  from "./kafkaProducer.ts";
-import { type SensorPing } from './types.ts';
+import { connectKafkaProducer, publishSensorPing }  from "./kafkaProducer";
+import { type SensorPing } from './types';
 
 const app = express();
 app.use(express.json()); // Middleware to parse incoming JSON

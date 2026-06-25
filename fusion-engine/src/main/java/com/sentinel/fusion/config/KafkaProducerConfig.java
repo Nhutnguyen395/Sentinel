@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfig {
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${spring.kafka.bootstrap-servers:kafka:29092}")
     private String bootStrapServers;
 
     // 1. Create the new topic for the shooter

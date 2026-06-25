@@ -1,10 +1,10 @@
 import { KafkaJS } from '@confluentinc/kafka-javascript';
-import { type SensorPing } from './types.ts';
+import { type SensorPing } from './types';
 
 const kafka = new KafkaJS.Kafka({
     kafkaJS: {
         clientId: 'sensor-gateway',
-        brokers: ['localhost:9092']
+        brokers: [process.env.KAFKA_BROKERS || 'localhost:9092']
     }
 });
 

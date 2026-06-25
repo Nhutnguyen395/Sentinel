@@ -1,45 +1,13 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
-
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "NodeNext",
-    "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-    "allowImportingTsExtensions": true
-  }
+    "target": "es2022",                                  /* Modern JavaScript features */
+    "module": "commonjs",                                /* Standard Node.js module system */
+    "rootDir": "./src",                                  /* TELL TS: "All my code is in here" */
+    "outDir": "./dist",                                  /* TELL TS: "Put the compiled code here" */
+    "esModuleInterop": true,                             /* Fixes import issues with older libraries */
+    "forceConsistentCasingInFileNames": true,            /* Windows/Linux file path safety */
+    "strict": true,                                      /* Enforce safe coding practices */
+    "skipLibCheck": true                                 /* Don't waste time checking node_modules */
+  },
+  "include": ["src/**/*"]                                /* Only compile the src folder */
 }
