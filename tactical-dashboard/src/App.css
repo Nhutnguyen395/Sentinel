@@ -11,6 +11,21 @@ html, body, #root {
   width: 100vw;
 }
 
+.target-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.pulse-dot {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border: 2px solid white;
+  border-radius: 50%;
+  /* We move the animation here so it doesn't fight Leaflet! */
+  animation: pulse 1s infinite;
+}
+
 /* Custom target icons pulse */
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1}
@@ -18,14 +33,14 @@ html, body, #root {
   100% { transform: scale(1); opacity: 1; }
 }
 
-.target-icon {
-  background-color: red;
-  border: 2px solid white;
-  border-radius: 50%;
-  animation: pulse 1s infinite;
+.ping-wrapper {
+  background: transparent;
+  border: none;
 }
 
-.ping-icon {
+.ping-dot {
+  width: 10px;
+  height: 10px;
   background-color: gray;
   border-radius: 50%;
   opacity: 0.6;

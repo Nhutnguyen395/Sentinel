@@ -17,10 +17,22 @@ interface ConfirmedTarget {
   estimatedLat: number;
   estimatedLon: number;
   sensorIds: string[];
+  confirmationTime: number;
 }
 
-const pingIcon = L.divIcon({ className: 'ping-icon', iconSize: [10, 10], iconAnchor: [5, 5]  });
-const targetIcon = L.divIcon({ className: 'target-icon', iconSize: [20, 20], iconAnchor: [10, 10]  });
+const pingIcon = L.divIcon({
+  className: 'ping-wrapper',
+  html: '<div class="ping-dot"></div>',
+  iconSize: [10, 10],
+  iconAnchor: [5, 5]
+});
+
+const targetIcon = L.divIcon({
+  className: 'target-wrapper',
+  html: '<div class="pulse-dot"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10]
+});
 
 function App() {
   const [pings, setPings] = useState<SensorPing[]>([]);
@@ -47,6 +59,17 @@ function App() {
       socket.disconnect();
     };
   }, []); // The empty array means "Only run this once on startup"
+
+  useEffect(() => {
+    const cleanupLoop = setInterval(() => {
+      const now = Date.now();
+      setTargets((currentTargets) =>
+        currentTargets.filter(target => (now - target.confirmationTime) < 6000)
+      );
+    }, 1000);
+
+    return () => clearInterval(cleanupLoop);
+  }, []);
 
   // Center the map on Los Angeles to match test coordinates for now
   const mapCenter: [number, number] = [34.05, -118.24];
