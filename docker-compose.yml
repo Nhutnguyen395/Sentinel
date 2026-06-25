@@ -105,6 +105,34 @@ services:
         condition: service_started
     restart: on-failure
 
+  dashboard-bff:
+    build: ./dashboard-bff
+    container_name: sentinel-dashboard-bff
+    ports:
+      - "3001:3001"
+    environment:
+      - KAFKA_BROKERS=kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: on-failure
+
+  tactical-dashboard:
+    build: ./tactical-dashboard
+    container_name: sentinel-tactical-dashboard
+    ports:
+      - "80:80"
+    depends_on:
+      - dashboard-bff
+
+  simulation-engine:
+    build: ./simulation-engine
+    container_name: sentinel-simulation-engine
+    environment:
+      - GATEWAY_URL=http://sensor-gateway:3000/api/sensors/ping
+    depends_on:
+      - sensor-gateway
+
 volumes:
   sentinel-db-data:
   sentinel-kafka-data:

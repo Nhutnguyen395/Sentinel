@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { startKafkaConsumer } from './kafkaConsumer.ts';
+import { startKafkaConsumer } from './kafkaConsumer.js';
 
 const app = express();
 app.use(cors()); // allow React app on different port to connect

@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 const kafka = new KafkaJS.Kafka({
     kafkaJS: {
         clientId: 'dashboard-bff',
-        brokers: ['localhost:9092']
+        brokers: [process.env.KAFKA_BROKERS || 'localhost:9092']
     }
 });
 
