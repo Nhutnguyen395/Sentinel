@@ -45,9 +45,9 @@ public class TargetListenerService {
 
             // Handle the response
             if (response.getIsInRange()){
-                log.error("LAUNCH COMMAND ISSUED!");
-                log.error("Assigned Battery: {}", response.getLauncherId());
-                log.error("Estimated Time to Impact: {} seconds", response.getTimeToInterceptSeconds());
+                log.warn("LAUNCH COMMAND ISSUED!");
+                log.info("Assigned Battery: {}", response.getLauncherId());
+                log.info("Estimated Time to Impact: {} seconds", response.getTimeToInterceptSeconds());
             }
         } catch (Exception e) {
             log.error("Failed to process target or contact battery service", e);
