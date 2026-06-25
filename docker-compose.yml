@@ -80,6 +80,31 @@ services:
       kafka:
         condition: service_healthy
 
+  battery-service:
+    build: ./battery-service
+    container_name: sentinel-battery-service
+    ports:
+      - "8082:8082"
+      - "9090:9090"
+    restart: unless-stopped
+
+  interceptor-service:
+    build: ./interceptor-service
+    container_name: sentinel-interceptor-service
+    ports:
+      - "8081:8081"
+    environment:
+      # Connect to Kafka using Docker DNS
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      # Connect to the Battery Service using Docker DNS!
+      - SPRING_GRPC_CLIENT_CHANNELS_BATTERY_SERVICE_ADDRESS=static://battery-service:9090
+    depends_on:
+      kafka:
+        condition: service_healthy
+      battery-service:
+        condition: service_started
+    restart: on-failure
+
 volumes:
   sentinel-db-data:
   sentinel-kafka-data:
