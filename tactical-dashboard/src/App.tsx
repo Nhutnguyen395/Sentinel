@@ -64,7 +64,11 @@ function App() {
     const cleanupLoop = setInterval(() => {
       const now = Date.now();
       setTargets((currentTargets) =>
-        currentTargets.filter(target => (now - target.confirmationTime) < 6000)
+        currentTargets.filter(target => (now - target.confirmationTime) < 4000)
+      );
+
+      setPings((currentPings) =>
+          currentPings.filter(ping => (now - ping.timestamp) < 3000)
       );
     }, 1000);
 
