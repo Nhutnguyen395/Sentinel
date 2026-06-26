@@ -128,6 +128,8 @@ services:
   simulation-engine:
     build: ./simulation-engine
     container_name: sentinel-simulation-engine
+    ports:
+      - "4000:4000"
     environment:
       - GATEWAY_URL=http://sensor-gateway:3000/api/sensors/ping
     depends_on:
