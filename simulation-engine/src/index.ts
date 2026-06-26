@@ -34,7 +34,7 @@ const getRandomSpawn = (distanceFromBase: number) => {
     const angle = Math.random() * Math.PI * 2; // random angle in radians
     return {
         lat: BASE_LAT + distanceFromBase * Math.cos(angle),
-        lon: BASE_LAT + distanceFromBase * Math.sin(angle)
+        lon: BASE_LON + distanceFromBase * Math.sin(angle)
     };
 };
 
@@ -88,6 +88,7 @@ app.post('/api/scenarios/hypersonic', (req, res) => {
 
         sendPing('RADAR-FAST', currentLat, currentLon, 'RF');
         sendPing('IR-FAST', currentLat, currentLon, 'INFRARED');
+        sendPing('OPTICAL-FAST', currentLat, currentLon, 'OPTICAL');
 
     }, 1000);
 
@@ -96,7 +97,7 @@ app.post('/api/scenarios/hypersonic', (req, res) => {
 
 // Scenario 3: Drone Swarm
 app.post('/api/scenarios/swarm', (req, res) => {
-    console.log('🐝 DRONE SWARM DETECTED!');
+    console.log('DRONE SWARM DETECTED!');
     const speed = 0.002;
     const spawn = getRandomSpawn(0.10);
     let currentLat = spawn.lat;
@@ -121,6 +122,8 @@ app.post('/api/scenarios/swarm', (req, res) => {
             sendPing(`SWARM-RADAR-${index}`, currentLat + offset[0], currentLon + offset[1], 'RF');
             // @ts-ignore
             sendPing(`SWARM-ACOUSTIC-${index}`, currentLat + offset[0], currentLon + offset[1], 'ACOUSTIC');
+            // @ts-ignore
+            sendPing(`SWARM-OPTICAL-${index}`, currentLat + offset[0], currentLon + offset[1], 'OPTICAL');
         });
 
     }, 2000);
