@@ -7,9 +7,10 @@ app.use(express.json());
 
 const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:3000/api/sensors/ping';
 
-// Base coordinates (Los Angeles)
+// Los Angeles is the defended asset
 const BASE_LAT = 34.05;
 const BASE_LON = -118.24;
+const INTERCEPT_RADIUS = 0.02 // The kill-zone perimeter
 
 const sendPing = async (sensorId: string, lat: number, lon: number, type: string) => {
     try {
@@ -23,9 +24,21 @@ const sendPing = async (sensorId: string, lat: number, lon: number, type: string
     }
 };
 
-// Random offset for the noise
-const randomOffset = (spread = 0.05) => (Math.random() - 0.5) * spread;
+// Use Pythagorean Theorem to find distance between two coordinates
+const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2));
+};
 
+// Spawns a target at a random 360-degree angle, at a specific distance from LA
+const getRandomSpawn = (distanceFromBase: number) => {
+    const angle = Math.random() * Math.PI * 2; // random angle in radians
+    return {
+        lat: BASE_LAT + distanceFromBase * Math.cos(angle),
+        lon: BASE_LAT + distanceFromBase * Math.sin(angle)
+    };
+};
+
+const randomOffset = (spread = 0.05) => (Math.random() - 0.5) * spread;
 let noiseInterval: NodeJS.Timeout;
 let noiseSpeed = 300;
 
@@ -53,51 +66,63 @@ app.post('/api/scenarios/weather', (req, res) => {
     res.json({status: 'Severe Weather initiated'});
 })
 
-// Scenario 2: Hypersonic Missle
+// Scenario 2: Hypersonic Missile
 app.post('/api/scenarios/hypersonic', (req, res) => {
     console.log('HYPERSONIC TARGET DETECTED!');
-    let lat = 33.90;
-    let lon = -118.10;
-    let ticks = 0;
+    const speed = 0.008;
+    const spawn = getRandomSpawn(0.15);
+    let currentLat = spawn.lat;
+    let currentLon = spawn.lon;
 
     const hyperInterval = setInterval(() => {
-        lat += 0.008;
-        lon -= 0.008;
+        const dist = getDistance(currentLat, currentLon, BASE_LAT, BASE_LON);
 
-        // Fire the corroborating sensors
-        sendPing('RADAR-FAST', lat, lon, 'RF');
-        sendPing('IR-FAST', lat, lon, "INFRARED");
+        if (dist <= INTERCEPT_RADIUS){
+            console.log("HYPERSONIC TARGET INTERCEPTED AT PERIMETER!");
+            clearInterval(hyperInterval);
+            return;
+        }
 
-        ticks++;
+        currentLat += ((BASE_LAT - currentLat) / dist) * speed;
+        currentLon += ((BASE_LON - currentLon) / dist) * speed;
 
-        if (ticks > 20) clearInterval(hyperInterval) // Stop after it flies off the map
+        sendPing('RADAR-FAST', currentLat, currentLon, 'RF');
+        sendPing('IR-FAST', currentLat, currentLon, 'INFRARED');
+
     }, 1000);
+
     res.json({ status: 'Hypersonic target launched' });
 });
 
 // Scenario 3: Drone Swarm
 app.post('/api/scenarios/swarm', (req, res) => {
     console.log('🐝 DRONE SWARM DETECTED!');
-    let lat = 34.15;
-    let lon = -118.30;
-    let ticks = 0;
+    const speed = 0.002;
+    const spawn = getRandomSpawn(0.10);
+    let currentLat = spawn.lat;
+    let currentLon = spawn.lon;
 
     const swarmInterval = setInterval(() => {
-        lat -= 0.002;
+        const dist = getDistance(currentLat, currentLon, BASE_LAT, BASE_LON);
 
-        // Spawn 3 targets in a tight triangle formation
-        const offsets = [[0, 0], [0.005, 0.005], [-0.005, 0.005]];
+        if (dist <= INTERCEPT_RADIUS) {
+            console.log('DRONE SWARM INTERCEPTED AT PERIMETER!');
+            clearInterval(swarmInterval);
+            return;
+        }
 
+        currentLat += ((BASE_LAT - currentLat) / dist) * speed;
+        currentLon += ((BASE_LON - currentLon) / dist) * speed;
+
+        // Spawn 5 targets in a tight cluster around the center point
+        const offsets = [[0,0], [0.005, 0.005], [-0.005, 0.005], [0.005, -0.005], [-0.005, -0.005]];
         offsets.forEach((offset, index) => {
             // @ts-ignore
-            sendPing(`SWARM-RADAR-${index}`, lat + offset[0], lon + offset[1], 'RF');
+            sendPing(`SWARM-RADAR-${index}`, currentLat + offset[0], currentLon + offset[1], 'RF');
             // @ts-ignore
-            sendPing(`SWARM-ACOUSTIC-${index}`, lat + offset[0], lon + offset[1], 'ACOUSTIC');
+            sendPing(`SWARM-ACOUSTIC-${index}`, currentLat + offset[0], currentLon + offset[1], 'ACOUSTIC');
         });
 
-        ticks++;
-
-        if (ticks > 30) clearInterval(swarmInterval);
     }, 2000);
     res.json({ status: 'Drone swarm launched' });
 });
