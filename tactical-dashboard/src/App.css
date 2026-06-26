@@ -45,3 +45,63 @@ html, body, #root {
   border-radius: 50%;
   opacity: 0.6;
 }
+
+.control-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  background: rgba(10, 15, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid #00f3ff;
+  border-radius: 8px;
+  padding: 20px;
+  z-index: 9999;
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.control-panel h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  color: #00f3ff;
+  letter-spacing: 2px;
+}
+
+.tactical-btn {
+  display: block;
+  width: 100%;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid red;
+  color: red;
+  padding: 12px;
+  margin-bottom: 15px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tactical-btn:hover {
+  background: red;
+  color: white;
+  box-shadow: 0 0 15px red;
+}
+
+.tactical-btn.weather {
+  border-color: #00f3ff;
+  color: #00f3ff;
+  background: rgba(0, 243, 255, 0.1);
+}
+
+.tactical-btn.weather:hover {
+  background: #00f3ff;
+  color: black;
+  box-shadow: 0 0 15px #00f3ff;
+}

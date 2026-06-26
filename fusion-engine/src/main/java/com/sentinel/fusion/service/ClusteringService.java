@@ -36,7 +36,7 @@ public class ClusteringService{
                 basePing.getId(), tenSecondsAgo, 50.0
             );
 
-            if (!nearbyPings.isEmpty()){
+            if (nearbyPings.size() >= 2){
                 log.warn("TARGET CONFIRMED! Sensor {} corroborated by {} other sensor(s) within 50m!",
                     basePing.getSensorId(), nearbyPings.size());
 

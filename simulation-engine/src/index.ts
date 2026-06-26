@@ -40,7 +40,7 @@ const getRandomSpawn = (distanceFromBase: number) => {
 
 const randomOffset = (spread = 0.05) => (Math.random() - 0.5) * spread;
 let noiseInterval: NodeJS.Timeout;
-let noiseSpeed = 300;
+let noiseSpeed = 500;
 
 // Noise Generator
 const startNoise = () => {

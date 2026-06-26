@@ -1,6 +1,6 @@
 import { useEffect, useState} from 'react';
 import { io } from 'socket.io-client';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
@@ -46,8 +46,7 @@ function App() {
 
     // Listen for raw noise
     socket.on('new-ping', (data: SensorPing) => {
-      // Add the array of pings, but keep only last 100 so the browser doesn't crash
-      setPings((prev) => [...prev.slice(-99), data]);
+      setPings((prev) => [...prev, data]);
     });
 
     // Listen for confirmed targets
@@ -64,7 +63,7 @@ function App() {
     const cleanupLoop = setInterval(() => {
       const now = Date.now();
       setTargets((currentTargets) =>
-        currentTargets.filter(target => (now - target.confirmationTime) < 4000)
+        currentTargets.filter(target => (now - target.confirmationTime) < 6000)
       );
 
       setPings((currentPings) =>
@@ -75,37 +74,69 @@ function App() {
     return () => clearInterval(cleanupLoop);
   }, []);
 
-  // Center the map on Los Angeles to match test coordinates for now
+  // Center the map on Los Angeles
   const mapCenter: [number, number] = [34.05, -118.24];
 
+  const triggerScenario = async (endpoint: string) => {
+    try {
+      await fetch(`http://localhost:4000/api/scenarios/${endpoint}`, {method: 'POST'});
+      console.log(`Command sent: ${endpoint}`);
+    } catch (error) {
+      console.error("Failed to contact God Mode API", error);
+    }
+  };
+
   return (
-      <MapContainer center={mapCenter} zoom={13} scrollWheelZoom={true}>
-        {/* The Map Background (Dark Mode OpenStreetMap) */}
-        <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        />
+      <>
+        <div className="control-panel">
+          <h2>Threat Injector</h2>
+          <button className="tactical-btn weather" onClick={() => triggerScenario('weather')}>
+            Spawn Sensor Storm
+          </button>
+          <button className="tactical-btn" onClick={() => triggerScenario('hypersonic')}>
+            Launch Hypersonic Missile
+          </button>
+          <button className="tactical-btn" onClick={() => triggerScenario('swarm')}>
+            Launch Drone Swarm
+          </button>
+        </div>
 
-        {/* Render the Raw Pings (The Noise) */}
-        {pings.map((ping, index) => (
-            <Marker key={`ping-${index}`} position={[ping.lat, ping.lon]} icon={pingIcon}>
-              <Popup>Sensor: {ping.sensorId}</Popup>
-            </Marker>
-        ))}
 
-        {/* Render the Confirmed Targets (The Signal) */}
-        {targets.map((target, index) => (
-            <Marker key={`target-${index}`} position={[target.estimatedLat, target.estimatedLon]} icon={targetIcon}>
-              <Popup>
-                <strong>CONFIRMED TARGET</strong><br/>
-                ID: {target.targetId}<br/>
-                Sensors: {target.sensorIds.join(', ')}
-              </Popup>
-            </Marker>
-        ))}
+        <MapContainer center={mapCenter} zoom={12} scrollWheelZoom={true}>
+          {/* The Map Background (Dark Mode OpenStreetMap) */}
+          <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          />
 
-      </MapContainer>
-  )
+          {/* Kill Zone Perimeter (2200 meters) */}
+          <Circle
+              center={mapCenter}
+              radius={2200}
+              pathOptions={{ color: '#00f3ff', fillColor: '#00f3ff', fillOpacity: 0.1, dashArray: '5, 10' }}
+          />
+
+          {/* Render the Raw Pings (The Noise) */}
+          {pings.map((ping, index) => (
+              <Marker key={`ping-${index}`} position={[ping.lat, ping.lon]} icon={pingIcon}>
+                <Popup>Sensor: {ping.sensorId}</Popup>
+              </Marker>
+          ))}
+
+          {/* Render the Confirmed Targets (The Signal) */}
+          {targets.map((target, index) => (
+              <Marker key={`target-${index}`} position={[target.estimatedLat, target.estimatedLon]} icon={targetIcon}>
+                <Popup>
+                  <strong>CONFIRMED TARGET</strong><br/>
+                  ID: {target.targetId}<br/>
+                  Sensors: {target.sensorIds.join(', ')}
+                </Popup>
+              </Marker>
+          ))}
+
+        </MapContainer>
+      </>
+  );
 }
 
 export default App;
