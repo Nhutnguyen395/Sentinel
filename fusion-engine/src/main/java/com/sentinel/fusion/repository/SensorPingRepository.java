@@ -27,4 +27,8 @@ public interface SensorPingRepository extends JpaRepository<SensorPingEntity, UU
             @Param("timeThreshold") long timeThreshold,
             @Param("radiusInMeters") double radiusInMeters
     );
+
+    @Query(value = "SELECT * FROM raw_sensor_pings WHERE ping_timestamp >= :timeThreshold", nativeQuery = true)
+    
+    List<SensorPingEntity> findRecentPings(@Param("timeThreshold") long timeThreshold);
 }

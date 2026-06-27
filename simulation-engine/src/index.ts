@@ -69,8 +69,8 @@ app.post('/api/scenarios/weather', (req, res) => {
 // Scenario 2: Hypersonic Missile
 app.post('/api/scenarios/hypersonic', (req, res) => {
     console.log('HYPERSONIC TARGET DETECTED!');
-    const speed = 0.008;
-    const spawn = getRandomSpawn(0.15);
+    const speed = 0.007;
+    const spawn = getRandomSpawn(0.3);
     let currentLat = spawn.lat;
     let currentLon = spawn.lon;
 
@@ -99,7 +99,7 @@ app.post('/api/scenarios/hypersonic', (req, res) => {
 app.post('/api/scenarios/swarm', (req, res) => {
     console.log('DRONE SWARM DETECTED!');
     const speed = 0.002;
-    const spawn = getRandomSpawn(0.10);
+    const spawn = getRandomSpawn(0.15);
     let currentLat = spawn.lat;
     let currentLon = spawn.lon;
 
