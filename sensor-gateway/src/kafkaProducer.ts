@@ -31,5 +31,6 @@ export const publishSensorPing = async (payload: SensorPing) => {
         console.log(`Successfully sent to Kafka partitions: `, result[0].partition);
     } catch (error){
         console.error(`Node.js failed to send to Kafka: `, error);
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
 }
