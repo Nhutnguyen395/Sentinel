@@ -40,7 +40,7 @@ function App() {
 
   useEffect(() => {
     // Connect to the Node.js BFF
-    const socket = io('http://localhost:3001');
+    const socket = io(import.meta.env.VITE_BFF_URL);
 
     socket.on('connect', () => console.log('Connected to BFF Websockets'));
 
@@ -79,7 +79,7 @@ function App() {
 
   const triggerScenario = async (endpoint: string) => {
     try {
-      await fetch(`http://localhost:4000/api/scenarios/${endpoint}`, {method: 'POST'});
+      await fetch(`${import.meta.env.VITE_SIMULATOR_URL}/api/scenarios/${endpoint}`, {method: 'POST'});
       console.log(`Command sent: ${endpoint}`);
     } catch (error) {
       console.error("Failed to contact God Mode API", error);
